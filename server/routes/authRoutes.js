@@ -16,4 +16,16 @@ router.post(
   authController.register
 );
 
+// @route   POST /auth/login
+// @desc    Authenticate user & get token
+// @access  Public
+router.post(
+  '/login',
+  [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password is required').exists()
+  ],
+  authController.login
+);
+
 module.exports = router;
