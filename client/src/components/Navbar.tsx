@@ -10,6 +10,12 @@ const Navbar = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
 
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+        setShowDropdown(false);
+    };
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchTerm.trim()) {

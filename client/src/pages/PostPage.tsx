@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft, Calendar, Edit, Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import CommentSection from '../components/CommentSection';
 import { useAuth } from '../context/AuthContext';
 
 interface Post {
@@ -166,6 +167,8 @@ const PostPage = () => {
                         </div>
                     </div>
                 </article>
+
+                {id && <CommentSection postId={id} />}
             </main>
         </div>
     );
