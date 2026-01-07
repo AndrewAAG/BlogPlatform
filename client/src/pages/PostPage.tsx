@@ -130,22 +130,22 @@ const PostPage = () => {
                             </div>
                         </div>
 
-                        {/* Actions (Only visible if isAuthor, temporarily showing for demo) */}
-                        {/* {isAuthor && ( */}
-                        <div className="flex items-center gap-2">
-                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary-600 rounded-lg transition-colors border border-slate-200">
-                                <Edit size={16} />
-                                Edit
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors border border-slate-200"
-                            >
-                                <Trash2 size={16} />
-                                Delete
-                            </button>
-                        </div>
-                        {/* )} */}
+                        {/* Actions (Only visible if isAuthor) */}
+                        {isAuthor && (
+                            <div className="flex items-center gap-2">
+                                <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary-600 rounded-lg transition-colors border border-slate-200">
+                                    <Edit size={16} />
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors border border-slate-200"
+                                >
+                                    <Trash2 size={16} />
+                                    Delete
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Content */}
