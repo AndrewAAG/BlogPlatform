@@ -5,35 +5,39 @@ exports.getAllPosts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || '';
+    const authorId = req.query.author_id;
     const offset = (page - 1) * limit;
 
-    let query = `SELECT p.*, u.name as author_name, u.profile_picture as author_avatar 
-                 FROM posts p 
-                 JOIN users u ON p.author_id = u.id`;
-    
-    let countQuery = 'SELECT COUNT(*) as total FROM posts';
+    let baseQuery = `FROM posts p JOIN users u ON p.author_id = u.id`;
+    let whereConditions = [];
     let queryParams = [];
-    let countParams = [];
 
     if (search) {
-      const searchCondition = ' WHERE p.title LIKE ? OR p.excerpt LIKE ?';
-      query += searchCondition;
-
-      countQuery = 'SELECT COUNT(*) as total FROM posts p WHERE p.title LIKE ? OR p.excerpt LIKE ?';
-      
+      whereConditions.push('(p.title LIKE ? OR p.excerpt LIKE ?)');
       const searchTerm = `%${search}%`;
       queryParams.push(searchTerm, searchTerm);
-      countParams.push(searchTerm, searchTerm);
     }
 
-    query += ' ORDER BY p.created_at DESC LIMIT ? OFFSET ?';
-    queryParams.push(limit, offset);
+    if (authorId) {
+      whereConditions.push('p.author_id = ?');
+      queryParams.push(authorId);
+    }
 
+    let whereClause = '';
+    if (whereConditions.length > 0) {
+      whereClause = ' WHERE ' + whereConditions.join(' AND ');
+    }
+
+    const query = `SELECT p.*, u.name as author_name, u.profile_picture as author_avatar ${baseQuery} ${whereClause} ORDER BY p.created_at DESC LIMIT ? OFFSET ?`;
+    const finalQueryParams = [...queryParams, limit, offset];
+
+    const countQuery = `SELECT COUNT(*) as total ${baseQuery} ${whereClause}`;
+    
     // Get posts with author details
-    const [posts] = await pool.query(query, queryParams);
+    const [posts] = await pool.query(query, finalQueryParams);
 
     // Get total count for pagination
-    const [countResult] = await pool.query(countQuery, countParams);
+    const [countResult] = await pool.query(countQuery, queryParams);
     const totalPosts = countResult[0].total;
 
     res.json({

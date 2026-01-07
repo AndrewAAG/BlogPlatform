@@ -11,39 +11,32 @@ const seedData = async () => {
     // await pool.query('DELETE FROM users');
 
     // 2. Create Users
-    const salt = await bcrypt.genSalt(10);
-    const password = await bcrypt.hash('password123', salt);
-
-    const users = [
-      {
-        name: 'Sarah Chen',
-        email: 'sarah@example.com',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-      },
-      {
-        name: 'Marcus Johnson',
-        email: 'marcus@example.com',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-      }
+    const hashedPassword = await bcrypt.hash('password123', 10);
+    
+    const usersData = [
+      ['Sarah Chen', 'sarah@devblog.com', hashedPassword, 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80', 'Full-stack developer passionate about React and TypeScript. Building the future, one component at a time.'],
+      ['Alex Kumar', 'alex@devblog.com', hashedPassword, 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80', 'Tech enthusiast and open source contributor. Love exploring new web technologies.'],
+      ['Elena Rodriguez', 'elena@devblog.com', hashedPassword, 'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80', 'UX Designer turned Frontend Developer. Obsessed with pixel-perfect interfaces.'],
+      ['David Kim', 'david@devblog.com', hashedPassword, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80', 'Backend specialist scaling systems. Coffee lover.']
     ];
 
     const userIds = [];
 
-    for (const user of users) {
+    for (const user of usersData) {
       // Check if exist
-      const [exists] = await pool.query('SELECT id FROM users WHERE email = ?', [user.email]);
+      const [exists] = await pool.query('SELECT id FROM users WHERE email = ?', [user[1]]); // user[1] is email
       let userId;
       
       if (exists.length > 0) {
         userId = exists[0].id;
-        console.log(`User ${user.name} already exists (ID: ${userId})`);
+        console.log(`User ${user[0]} already exists (ID: ${userId})`); // user[0] is name
       } else {
         const [res] = await pool.query(
-          'INSERT INTO users (name, email, password, profile_picture) VALUES (?, ?, ?, ?)',
-          [user.name, user.email, password, user.avatar]
+          'INSERT INTO users (name, email, password, profile_picture, bio) VALUES (?, ?, ?, ?, ?)',
+          user
         );
         userId = res.insertId;
-        console.log(`Created user: ${user.name} (ID: ${userId})`);
+        console.log(`Created user: ${user[0]} (ID: ${userId})`);
       }
       userIds.push(userId);
     }
@@ -133,7 +126,7 @@ const seedData = async () => {
              if (exists.length > 0) {
                  commentUserIds.push(exists[0].id);
              } else {
-                 const [res] = await pool.query('INSERT INTO users (name, email, password, profile_picture) VALUES (?, ?, ?, ?)', [user.name, user.email, password, user.avatar]);
+                 const [res] = await pool.query('INSERT INTO users (name, email, password, profile_picture) VALUES (?, ?, ?, ?)', [user.name, user.email, hashedPassword, user.avatar]);
                  commentUserIds.push(res.insertId);
                  console.log(`Created comment user: ${user.name}`);
              }
