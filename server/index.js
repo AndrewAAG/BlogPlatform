@@ -3,32 +3,25 @@ const cors = require('cors');
 const app = express();
 require('dotenv').config();
 
-app.options('*', cors());
+const allowedOrigins = [
+  'http://localhost:5173',                     
+  'https://blog-platform-andrew.netlify.app'    
+];
 
-// Middleware
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
+  origin: function (origin, callback) {
+    // Allow requests with no origin (Postman, Mobile Apps, Server-to-Server)
     if (!origin) return callback(null, true);
-    
-    // Check if origin matches CLIENT_URL or localhost (for dev)
-    // Normalize CLIENT_URL to ensure no trailing slash (common user error)
-    const clientUrl = (process.env.CLIENT_URL || '').replace(/\/$/, '');
-    const allowedOrigins = [
-      clientUrl, 
-      'http://localhost:5173', 
-      'http://localhost:5001',
-      'https://blog-platform-andrew.netlify.app' // Hardcoded for immediate fix
-    ];
-    
-    if (allowedOrigins.includes(origin) || !clientUrl) {
+  
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      console.log('Blocked by CORS:', origin); // Log for debugging
+      console.log('Blocked Origin:', origin); 
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true, // Izinkan cookies/token
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
 
 app.use(express.json()); // To read JSON data from request body
