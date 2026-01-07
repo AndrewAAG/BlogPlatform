@@ -14,6 +14,7 @@ interface AuthContextType {
     loading: boolean;
     login: (token: string) => void;
     logout: () => void;
+    checkAuth: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,30 +24,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
     const [loading, setLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        const loadUser = async () => {
-            if (token) {
-                axios.defaults.headers.common['x-auth-token'] = token;
-                localStorage.setItem('token', token);
-                try {
-                    const res = await axios.get('http://localhost:5001/auth/me');
-                    setUser(res.data);
-                } catch (err) {
-                    console.error('Error loading user:', err);
-                    delete axios.defaults.headers.common['x-auth-token'];
-                    localStorage.removeItem('token');
-                    setToken(null);
-                    setUser(null);
-                }
-            } else {
+    const checkAuth = async () => {
+        if (token) {
+            axios.defaults.headers.common['x-auth-token'] = token;
+            localStorage.setItem('token', token);
+            try {
+                const res = await axios.get('http://localhost:5001/auth/me');
+                setUser(res.data);
+            } catch (err) {
+                console.error('Error loading user:', err);
                 delete axios.defaults.headers.common['x-auth-token'];
                 localStorage.removeItem('token');
+                setToken(null);
                 setUser(null);
             }
-            setLoading(false);
-        };
+        } else {
+            delete axios.defaults.headers.common['x-auth-token'];
+            localStorage.removeItem('token');
+            setUser(null);
+        }
+        setLoading(false);
+    };
 
-        loadUser();
+    useEffect(() => {
+        checkAuth();
     }, [token]);
 
     const login = (newToken: string) => {
@@ -65,7 +66,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             isAuthenticated: !!token,
             loading,
             login,
-            logout
+            logout,
+            checkAuth
         }}>
             {children}
         </AuthContext.Provider>

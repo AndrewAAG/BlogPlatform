@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     profile_picture VARCHAR(255),
+    bio TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
