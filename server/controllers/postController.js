@@ -47,3 +47,27 @@ exports.getAllPosts = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+exports.getPostById = async (req, res) => {
+  try {
+    const [posts] = await pool.query(
+      `SELECT p.*, u.name as author_name, u.profile_picture as author_avatar 
+       FROM posts p 
+       JOIN users u ON p.author_id = u.id 
+       WHERE p.id = ?`,
+      [req.params.id]
+    );
+
+    if (posts.length === 0) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    res.json(posts[0]);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') { // MySQL doesn't have ObjectId, but keeping generic error structure
+        return res.status(404).json({ message: 'Post not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+};
