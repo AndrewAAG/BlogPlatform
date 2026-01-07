@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import PostPage from './pages/PostPage';
 import ProfilePage from './pages/ProfilePage';
+import CreateEditPostPage from './pages/CreateEditPostPage';
 import './index.css';
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/post/:id" element={<PostPage />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
+            <Route path="/write" element={<CreateEditPostPage />} />
+            <Route path="/edit/:id" element={<CreateEditPostPage />} />
           </Routes>
         </div>
       </Router>

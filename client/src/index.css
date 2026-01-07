@@ -4,3 +4,12 @@
   --color-primary-500: #6366f1;
   --color-primary-600: #4f46e5;
 }
+
+/* Custom Markdown Styles */
+.warning-box {
+  @apply border-l-4 border-amber-500 bg-amber-50 p-4 rounded-r-lg my-6 text-amber-900;
+}
+
+.warning-box p {
+  @apply mb-0;
+}

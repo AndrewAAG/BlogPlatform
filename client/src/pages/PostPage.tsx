@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ArrowLeft, Calendar, Edit, Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import CommentSection from '../components/CommentSection';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import { useAuth } from '../context/AuthContext';
 
 interface Post {
@@ -154,22 +155,9 @@ const PostPage = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-p:leading-relaxed prose-a:text-primary-600 hover:prose-a:text-primary-700">
-                        <div className="whitespace-pre-wrap">
-                            {post.content}
-                        </div>
-
-                        {/* Static Code Block Example for Visual Fidelity */}
-                        <div className="my-8 bg-slate-900 rounded-xl p-6 text-slate-50 overflow-x-auto shadow-lg">
-                            <pre className="font-mono text-sm leading-relaxed">
-                                <code>{`interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'user';
-}`}</code>
-                            </pre>
-                        </div>
+                    {/* Content */}
+                    <div className="mt-8">
+                        <MarkdownRenderer content={post.content} />
                     </div>
                 </article>
 
