@@ -7,6 +7,7 @@ import PostCard from '../components/PostCard';
 import EditProfileModal from '../components/EditProfileModal';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { API_URL } from '../config';
 
 const ProfilePage = () => {
     const { id } = useParams();
@@ -34,7 +35,7 @@ const ProfilePage = () => {
         if (!profileId) return;
         setIsLoadingProfile(true);
         try {
-            const res = await axios.get(`http://localhost:5001/users/${profileId}`);
+            const res = await axios.get(`${API_URL}/users/${profileId}`);
             setProfile(res.data);
         } catch (err) {
             console.error('Error fetching profile:', err);
@@ -57,7 +58,7 @@ const ProfilePage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5001/users/${profileId}/photo`, formData, {
+            const res = await axios.post(`${API_URL}/users/${profileId}/photo`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'x-auth-token': token
@@ -86,7 +87,7 @@ const ProfilePage = () => {
         if (!profileId) return;
         setPostsLoading(true);
         try {
-            const res = await axios.get(`http://localhost:5001/posts?author_id=${profileId}&page=${currentPage}&limit=5`);
+            const res = await axios.get(`${API_URL}/posts?author_id=${profileId}&page=${currentPage}&limit=5`);
             setPosts(res.data.posts);
             setTotalPages(res.data.totalPages);
         } catch (err) {

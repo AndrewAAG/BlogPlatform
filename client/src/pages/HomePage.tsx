@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import PostCard from '../components/PostCard';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../config';
 
 interface Post {
     id: number;
@@ -35,7 +36,7 @@ const HomePage = () => {
         const fetchPosts = async () => {
             setIsLoading(true);
             try {
-                const res = await axios.get(`http://localhost:5001/posts?page=${currentPage}&limit=5&search=${encodeURIComponent(searchQuery)}`);
+                const res = await axios.get(`${API_URL}/posts?page=${currentPage}&limit=5&search=${encodeURIComponent(searchQuery)}`);
                 setPosts(res.data.posts);
                 setTotalPages(res.data.totalPages);
                 setError('');

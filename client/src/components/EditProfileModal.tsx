@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { X } from 'lucide-react';
+import { API_URL } from '../config';
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -24,7 +25,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onUpdate }: EditProfil
 
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5001/users/${currentUser.id}`,
+            await axios.put(`${API_URL}/users/${currentUser.id}`,
                 { name, bio },
                 { headers: { 'x-auth-token': token } }
             );

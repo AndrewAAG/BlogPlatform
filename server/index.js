@@ -4,11 +4,14 @@ const app = express();
 require('dotenv').config();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || '*', 
+  credentials: true
+}));
 app.use(express.json()); // To read JSON data from request body
 
 app.get('/', (req, res) => {
-  res.send('Test Backend');
+  res.send('API Running');
 });
 
 // Routes

@@ -5,6 +5,7 @@ import { Save, Eye, PenTool, Edit2, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config';
 
 const CreateEditPostPage = () => {
     const { id } = useParams(); // If ID exists, we are in Edit mode
@@ -32,7 +33,7 @@ const CreateEditPostPage = () => {
         if (isEditMode) {
             const fetchPost = async () => {
                 try {
-                    const res = await axios.get(`http://localhost:5001/posts/${id}`);
+                    const res = await axios.get(`${API_URL}/posts/${id}`);
                     const post = res.data;
                     setTitle(post.title);
                     setExcerpt(post.excerpt || '');
@@ -102,10 +103,10 @@ const CreateEditPostPage = () => {
             const payload = { title, excerpt, content, tags: categories };
 
             if (isEditMode) {
-                await axios.put(`http://localhost:5001/posts/${id}`, payload, { headers });
+                await axios.put(`${API_URL}/posts/${id}`, payload, { headers });
                 navigate(`/post/${id}`);
             } else {
-                const res = await axios.post('http://localhost:5001/posts', payload, { headers });
+                const res = await axios.post(`${API_URL}/posts`, payload, { headers });
                 navigate(`/post/${res.data.id}`);
             }
         } catch (err: any) {

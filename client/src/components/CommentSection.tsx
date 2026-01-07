@@ -4,6 +4,7 @@ import { MessageSquare, CornerDownRight, Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
+import { API_URL } from '../config';
 
 interface Comment {
     id: number;
@@ -34,7 +35,7 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
 
     const fetchComments = async () => {
         try {
-            const res = await axios.get(`http://localhost:5001/posts/${postId}/comments`);
+            const res = await axios.get(`${API_URL}/posts/${postId}/comments`);
             setComments(res.data);
         } catch (err) {
             console.error('Error fetching comments:', err);
@@ -95,7 +96,7 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5001/comments/${deleteId}`, {
+            await axios.delete(`${API_URL}/comments/${deleteId}`, {
                 headers: { 'x-auth-token': token }
             });
             setDeleteId(null);
@@ -124,7 +125,7 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
         try {
             const token = localStorage.getItem('token');
             await axios.put(
-                `http://localhost:5001/comments/${commentId}`,
+                `${API_URL}/comments/${commentId}`,
                 { content: editContent },
                 { headers: { 'x-auth-token': token } }
             );

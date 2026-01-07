@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, LogIn, Code2 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ const LoginPage = () => {
         setError('');
 
         try {
-            const res = await axios.post('http://localhost:5001/auth/login', {
+            const res = await axios.post(`${API_URL}/auth/login`, {
                 email,
                 password
             });

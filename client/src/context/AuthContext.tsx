@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext, type ReactNode } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config';
 
 interface User {
     id: number;
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             axios.defaults.headers.common['x-auth-token'] = token;
             localStorage.setItem('token', token);
             try {
-                const res = await axios.get('http://localhost:5001/auth/me');
+                const res = await axios.get(`${API_URL}/auth/me`);
                 setUser(res.data);
             } catch (err) {
                 console.error('Error loading user:', err);

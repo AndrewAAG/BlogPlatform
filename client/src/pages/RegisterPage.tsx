@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, UserPlus, Code2 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config';
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ const RegisterPage = () => {
         setError('');
 
         try {
-            const res = await axios.post('http://localhost:5001/auth/register', {
+            const res = await axios.post(`${API_URL}/auth/register`, {
                 name,
                 email,
                 password
