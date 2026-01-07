@@ -4,14 +4,20 @@ const app = express();
 require('dotenv').config();
 
 app.use((req, res, next) => {
-  res.header('X-Debug-Code-Active', 'YES_IT_IS_RUNNING');
-
-  const TRACER_VALUE = 'TEST-DEBUG-MODE';
+  const origin = req.headers.origin;
   
-  res.header('Access-Control-Allow-Origin', TRACER_VALUE);
+  const allowedOrigins = [
+    'http://localhost:5173',                 
+    'https://blog-platform-andrew.netlify.app' 
+  ];
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Credentials', 'true'); // Wajib untuk cookies/auth
 
   if (req.method === 'OPTIONS') {
     return res.status(200).send();
