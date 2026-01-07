@@ -3,6 +3,7 @@ import axios from 'axios';
 import { MessageSquare, CornerDownRight, Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 interface Comment {
     id: number;
@@ -21,6 +22,7 @@ interface CommentSectionProps {
 
 const CommentSection = ({ postId }: CommentSectionProps) => {
     const { user, isAuthenticated } = useAuth();
+    const { showToast } = useToast();
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
     const [replyingTo, setReplyingTo] = useState<number | null>(null);
@@ -57,9 +59,10 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
             );
             setNewComment('');
             fetchComments();
+            showToast('Comment posted successfully', 'success');
         } catch (err) {
             console.error('Error posting comment:', err);
-            alert('Failed to post comment. Please login again.');
+            showToast('Failed to post comment. Please login again.', 'error');
         }
     };
 
@@ -76,9 +79,10 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
             setReplyContent('');
             setReplyingTo(null);
             fetchComments();
+            showToast('Reply posted successfully', 'success');
         } catch (err) {
             console.error('Error posting reply:', err);
-            alert('Failed to post reply');
+            showToast('Failed to post reply', 'error');
         }
     };
 
@@ -96,9 +100,10 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
             });
             setDeleteId(null);
             fetchComments();
+            showToast('Comment deleted successfully', 'success');
         } catch (err) {
             console.error('Error deleting comment:', err);
-            alert('Failed to delete comment');
+            showToast('Failed to delete comment', 'error');
         }
     };
 
@@ -126,9 +131,10 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
             setEditingId(null);
             setEditContent('');
             fetchComments();
+            showToast('Comment updated successfully', 'success');
         } catch (err) {
             console.error('Error updating comment:', err);
-            alert('Failed to update comment');
+            showToast('Failed to update comment', 'error');
         }
     };
 

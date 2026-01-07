@@ -57,7 +57,7 @@ const Navbar = () => {
                         {isAuthenticated ? (
                             <>
                                 <Link
-                                    to="/create-post"
+                                    to="/write"
                                     className="inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                                 >
                                     <PenSquare size={16} />

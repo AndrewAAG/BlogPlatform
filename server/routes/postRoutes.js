@@ -24,4 +24,19 @@ router.get('/:id/comments', commentController.getCommentsByPostId);
 // @access  Private
 router.post('/:id/comments', auth, commentController.addComment);
 
+// @route   POST /posts
+// @desc    Create a new post
+// @access  Private
+router.post('/', auth, postController.createPost);
+
+// @route   PUT /posts/:id
+// @desc    Edit an existing post
+// @access  Private
+router.put('/:id', auth, postController.updatePost);
+
+// @route   DELETE /posts/:id
+// @desc    Delete a post
+// @access  Private
+router.delete('/:id', auth, postController.deletePost);
+
 module.exports = router;

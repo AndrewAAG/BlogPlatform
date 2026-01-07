@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft, Calendar, Edit, Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import CommentSection from '../components/CommentSection';
+import MarkdownRenderer from '../components/MarkdownRenderer';
+import ConfirmationModal from '../components/ConfirmationModal';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 interface Post {
     id: number;
@@ -22,9 +25,13 @@ const PostPage = () => {
     const { id } = useParams();
     const { user } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
+
     const [post, setPost] = useState<Post | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const { showToast } = useToast();
 
     const from = location.state?.from?.pathname || '/';
     const backText = from.includes('profile') ? 'Back to profile' : 'Back to feed';
@@ -44,11 +51,25 @@ const PostPage = () => {
         fetchPost();
     }, [id]);
 
-    const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this post?')) {
-            alert('Delete functionality coming soon!');
+    const handleDelete = () => {
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            await axios.delete(`http://localhost:5001/posts/${id}`, {
+                headers: { 'x-auth-token': token }
+            });
+            showToast('Post deleted successfully!', 'success');
+            navigate('/');
+        } catch (err) {
+            console.error('Failed to delete post:', err);
+            showToast('Failed to delete post. Please try again.', 'error');
         }
-    }
+    };
 
     if (isLoading) {
         return (
@@ -116,7 +137,6 @@ const PostPage = () => {
                     </h1>
 
                     {/* Author & Meta */}
-                    {/* Author & Meta */}
                     <div className="flex items-center justify-between border-b border-slate-100 pb-8 mb-8">
                         <Link to={`/profile/${post.author_id}`} className="flex items-center gap-3 group">
                             <img
@@ -138,10 +158,13 @@ const PostPage = () => {
                         {/* Actions (Only visible if isAuthor) */}
                         {isAuthor && (
                             <div className="flex items-center gap-2">
-                                <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary-600 rounded-lg transition-colors border border-slate-200">
+                                <Link
+                                    to={`/edit/${post.id}`}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary-600 rounded-lg transition-colors border border-slate-200"
+                                >
                                     <Edit size={16} />
                                     Edit
-                                </button>
+                                </Link>
                                 <button
                                     onClick={handleDelete}
                                     className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors border border-slate-200"
@@ -154,26 +177,22 @@ const PostPage = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-p:leading-relaxed prose-a:text-primary-600 hover:prose-a:text-primary-700">
-                        <div className="whitespace-pre-wrap">
-                            {post.content}
-                        </div>
-
-                        {/* Static Code Block Example for Visual Fidelity */}
-                        <div className="my-8 bg-slate-900 rounded-xl p-6 text-slate-50 overflow-x-auto shadow-lg">
-                            <pre className="font-mono text-sm leading-relaxed">
-                                <code>{`interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'user';
-}`}</code>
-                            </pre>
-                        </div>
+                    <div className="mt-8">
+                        <MarkdownRenderer content={post.content} />
                     </div>
                 </article>
 
                 {id && <CommentSection postId={id} />}
+
+                <ConfirmationModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    onConfirm={confirmDelete}
+                    title="Delete Post"
+                    message="Are you sure you want to delete this post? This action cannot be undone and will remove the post permanently from your profile."
+                    confirmText="Delete Post"
+                    isDestructive={true}
+                />
             </main>
         </div>
     );

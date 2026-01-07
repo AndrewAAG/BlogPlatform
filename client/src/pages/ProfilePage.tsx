@@ -6,11 +6,13 @@ import Navbar from '../components/Navbar';
 import PostCard from '../components/PostCard';
 import EditProfileModal from '../components/EditProfileModal';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const ProfilePage = () => {
     const { id } = useParams();
     const { user: currentUser, checkAuth } = useAuth();
     const navigate = useNavigate();
+    const { showToast } = useToast();
 
     // If accessing /profile/me and we have currentUser, redirect to their valid ID url for consistency 
     // or just use it. Here we handle "me" or numeric ID.
@@ -46,7 +48,7 @@ const ProfilePage = () => {
         if (!file) return;
 
         if (!file.type.startsWith('image/')) {
-            alert('Please upload an image file');
+            showToast('Please upload an image file', 'warning');
             return;
         }
 
@@ -62,6 +64,7 @@ const ProfilePage = () => {
                 }
             });
             setProfile((prev: any) => ({ ...prev, profile_picture: res.data.profile_picture }));
+            showToast('Profile photo updated successfully', 'success');
 
             // Refresh global auth state to update Navbar
             if (isOwnProfile) {
@@ -70,7 +73,7 @@ const ProfilePage = () => {
 
         } catch (err) {
             console.error('Error uploading photo:', err);
-            alert('Failed to upload photo');
+            showToast('Failed to upload photo', 'error');
         }
     };
 
