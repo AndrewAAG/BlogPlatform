@@ -14,6 +14,7 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/posts', require('./routes/postRoutes'));
+app.use('/comments', require('./routes/commentRoutes'));
 
 // Run Server
 const PORT = process.env.PORT || 5001;

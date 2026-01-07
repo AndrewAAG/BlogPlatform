@@ -110,8 +110,59 @@ const seedData = async () => {
             console.log(`Created extra post: ${title}`);
         }
     }
+    // 5. Create Comments
+    console.log('--- Seeding Comments ---');
+    // Clear existing comments first to ensure clean state
+    await pool.query('DELETE FROM comments');
+    
+    // Get the first post ID
+    const [firstPost] = await pool.query('SELECT id FROM posts ORDER BY id ASC LIMIT 1');
 
-    console.log('✅ Seeding completed successfully!');
+    if (firstPost.length > 0) {
+        const postId = firstPost[0].id;
+        
+        // Additional users for comments (matching the design somewhat)
+        const commentUsers = [
+            { name: 'Elena Rodriguez', email: 'elena@example.com', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
+            { name: 'David Kim', email: 'david@example.com', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }
+        ];
+
+        const commentUserIds = [];
+        for (const user of commentUsers) {
+             const [exists] = await pool.query('SELECT id FROM users WHERE email = ?', [user.email]);
+             if (exists.length > 0) {
+                 commentUserIds.push(exists[0].id);
+             } else {
+                 const [res] = await pool.query('INSERT INTO users (name, email, password, profile_picture) VALUES (?, ?, ?, ?)', [user.name, user.email, password, user.avatar]);
+                 commentUserIds.push(res.insertId);
+                 console.log(`Created comment user: ${user.name}`);
+             }
+        }
+        
+        // Combine all user IDs for variety
+        // userIds[0] = Sarah (Author), userIds[1] = Marcus
+
+        // 1. Top level comment by Marcus (userIds[1])
+        const [c1] = await pool.query('INSERT INTO comments (content, post_id, user_id, created_at) VALUES (?, ?, ?, DATE_SUB(NOW(), INTERVAL 2 HOUR))', 
+            ['Great article! The TypeScript patterns you mentioned are exactly what we implemented in our team. Really helped with onboarding new developers.', postId, userIds[1]]);
+        console.log('Created top-level comment 1');
+
+        // 2. Reply to c1 by Elena
+        await pool.query('INSERT INTO comments (content, post_id, user_id, parent_id, created_at) VALUES (?, ?, ?, ?, DATE_SUB(NOW(), INTERVAL 1 HOUR))',
+            ['I\'ve been struggling with state management in large apps. The React Query suggestion is gold!', postId, commentUserIds[0], c1.insertId]);
+        console.log('Created reply to comment 1');
+        
+        // 3. Threaded reply by Sarah (Author) to Elena
+        await pool.query('INSERT INTO comments (content, post_id, user_id, parent_id, created_at) VALUES (?, ?, ?, ?, NOW())',
+            ['Thanks! React Query has been a game-changer for us. Let me know if you want a deep-dive article on that topic.', postId, userIds[0], c1.insertId]); 
+        console.log('Created reply from author');
+
+        // 4. Another independent comment
+        await pool.query('INSERT INTO comments (content, post_id, user_id) VALUES (?, ?, ?)',
+            ['This is fantastic content. Looking forward to the next one!', postId, commentUserIds[1]]);
+        
+        console.log(`Seeded comments for Post ID ${postId}`);
+    }
     process.exit(0);
 
 
