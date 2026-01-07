@@ -3,26 +3,30 @@ const cors = require('cors');
 const app = express();
 require('dotenv').config();
 
-const allowedOrigins = [
-  'http://localhost:5173',                     
-  'https://blog-platform-andrew.netlify.app'    
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (Postman, Mobile Apps, Server-to-Server)
-    if (!origin) return callback(null, true);
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
   
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log('Blocked Origin:', origin); 
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, 
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-}));
+  const PROD_ORIGIN = 'https://blog-platform-andrew.netlify.app';
+  
+  const allowedOrigins = [
+    'http://localhost:5173',
+    PROD_ORIGIN
+  ];
+
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).send();
+  }
+
+  next();
+});
 
 app.use(express.json()); // To read JSON data from request body
 
