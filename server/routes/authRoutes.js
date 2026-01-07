@@ -28,4 +28,10 @@ router.post(
   authController.login
 );
 
+// @route   GET /auth/me
+// @desc    Get current user
+// @access  Private
+router.get('/me', require('../middleware/auth'), authController.getMe);
+
+
 module.exports = router;

@@ -96,3 +96,13 @@ exports.login = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+exports.getMe = async (req, res) => {
+  try {
+    const [user] = await pool.query('SELECT id, name, email, profile_picture FROM users WHERE id = ?', [req.user.id]);
+    res.json(user[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+};
