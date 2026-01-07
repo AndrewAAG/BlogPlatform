@@ -149,7 +149,7 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
             const isOwner = user && user.id === comment.user_id;
 
             return (
-                <div key={comment.id} className={`mt-6 ${isReply ? 'ml-8 pl-4 border-l-2 border-slate-100' : ''}`}>
+                <div key={comment.id} className={`mt-6 ${isReply ? 'ml-4 md:ml-8 pl-4 border-l-2 border-slate-100' : ''}`}>
                     <div className="flex gap-3">
                         <Link to={`/profile/${comment.user_id}`} className="shrink-0">
                             <img

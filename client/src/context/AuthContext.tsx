@@ -3,8 +3,9 @@ import axios from 'axios';
 
 interface User {
     id: number;
+    name: string;
+    email?: string;
     profile_picture?: string;
-    // Add other user properties as needed
 }
 
 interface AuthContextType {

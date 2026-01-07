@@ -203,9 +203,9 @@ const CreateEditPostPage = () => {
                     </div>
 
                     {/* Split Pane Editor */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[600px]">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[600px]">
                         {/* Editor Input */}
-                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden min-h-[400px] lg:min-h-0">
                             <div className="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center justify-between">
                                 <span className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                                     <PenTool size={16} /> Content <span className="text-red-500">*</span>
@@ -223,7 +223,7 @@ const CreateEditPostPage = () => {
                         </div>
 
                         {/* Preview */}
-                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden min-h-[400px] lg:min-h-0">
                             <div className="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center justify-between">
                                 <span className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                                     Preview
