@@ -3,6 +3,8 @@ const cors = require('cors');
 const app = express();
 require('dotenv').config();
 
+app.options('*', cors());
+
 // Middleware
 app.use(cors({
   origin: (origin, callback) => {
