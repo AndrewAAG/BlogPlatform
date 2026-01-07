@@ -146,7 +146,7 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
 
     // Recursive function to render comments
     const renderComments = (commentsList: Comment[], isReply = false) => {
-        return commentsList.map(comment => {
+        return (commentsList || []).map(comment => {
             const isOwner = user && user.id === comment.user_id;
 
             return (
