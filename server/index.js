@@ -40,6 +40,17 @@ app.get('/', (req, res) => {
   res.send('API Running');
 });
 
+// Temporary Seed Route
+app.post('/seed-db', async (req, res) => {
+  try {
+    const seedData = require('./scripts/seedDb');
+    await seedData();
+    res.json({ message: 'Database seeded successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Seeding failed', details: err.message });
+  }
+});
+
 // Routes
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/posts', require('./routes/postRoutes'));
