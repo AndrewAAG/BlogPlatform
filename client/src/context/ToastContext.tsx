@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, type ReactNode, useCallback } from 'react';
 import { X, Check, Info, AlertTriangle } from 'lucide-react';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -48,9 +48,9 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
                     <div
                         key={toast.id}
                         className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-white transform transition-all animate-in slide-in-from-right duration-300 min-w-[300px] ${toast.type === 'success' ? 'bg-green-600' :
-                                toast.type === 'error' ? 'bg-red-600' :
-                                    toast.type === 'warning' ? 'bg-amber-500' :
-                                        'bg-blue-600'
+                            toast.type === 'error' ? 'bg-red-600' :
+                                toast.type === 'warning' ? 'bg-amber-500' :
+                                    'bg-blue-600'
                             }`}
                     >
                         {toast.type === 'success' && <Check size={20} />}
