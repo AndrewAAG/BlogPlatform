@@ -3,166 +3,216 @@ const bcrypt = require('bcrypt');
 
 const seedData = async () => {
   try {
-    console.log('🌱 Starting database seed...');
+    console.log('🌱 Starting database seed with clean, realistic data...');
 
-    // 1. Clear existing data (optional, be careful in prod)
-    // await pool.query('DELETE FROM comments');
-    // await pool.query('DELETE FROM posts');
-    // await pool.query('DELETE FROM users');
+    // 1. Clean up existing data (Child tables first)
+    console.log('Cleaning up old data...');
+    await pool.query('DELETE FROM comments');
+    await pool.query('DELETE FROM posts');
+    await pool.query('DELETE FROM users');
+    
+    // Reset Auto Increment (Optional, specific to MySQL)
+    // await pool.query('ALTER TABLE users AUTO_INCREMENT = 1');
+    // await pool.query('ALTER TABLE posts AUTO_INCREMENT = 1');
+    // await pool.query('ALTER TABLE comments AUTO_INCREMENT = 1');
 
-    // 2. Create Users
+
+    // 2. Create Users (Authors)
+    console.log('Creating users...');
     const hashedPassword = await bcrypt.hash('password123', 10);
     
+    // Realistic user profiles from Unsplash for avatars
     const usersData = [
-      ['Sarah Chen', 'sarah@devblog.com', hashedPassword, 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80', 'Full-stack developer passionate about React and TypeScript. Building the future, one component at a time.'],
-      ['Alex Kumar', 'alex@devblog.com', hashedPassword, 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80', 'Tech enthusiast and open source contributor. Love exploring new web technologies.'],
-      ['Elena Rodriguez', 'elena@devblog.com', hashedPassword, 'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80', 'UX Designer turned Frontend Developer. Obsessed with pixel-perfect interfaces.'],
-      ['David Kim', 'david@devblog.com', hashedPassword, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80', 'Backend specialist scaling systems. Coffee lover.']
+      {
+        name: 'Sarah Chen', 
+        email: 'sarah@devblog.com', 
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80', 
+        bio: 'Senior Frontend Engineer. Passionate about React, UI/UX, and accessibility.'
+      },
+      {
+        name: 'Alex Kumar', 
+        email: 'alex@devblog.com', 
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80', 
+        bio: 'Full Stack Developer & Open Source contributor. Writing about Node.js and Cloud Architecture.'
+      },
+      {
+        name: 'Elena Rodriguez', 
+        email: 'elena@devblog.com', 
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80', 
+        bio: 'Product Designer who codes. Sharing insights on design systems and creative coding.'
+      }
     ];
 
     const userIds = [];
 
     for (const user of usersData) {
-      // Check if exist
-      const [exists] = await pool.query('SELECT id FROM users WHERE email = ?', [user[1]]); // user[1] is email
-      let userId;
-      
-      if (exists.length > 0) {
-        userId = exists[0].id;
-        console.log(`User ${user[0]} already exists (ID: ${userId})`); // user[0] is name
-      } else {
         const [res] = await pool.query(
           'INSERT INTO users (name, email, password, profile_picture, bio) VALUES (?, ?, ?, ?, ?)',
-          user
+          [user.name, user.email, hashedPassword, user.avatar, user.bio]
         );
-        userId = res.insertId;
-        console.log(`Created user: ${user[0]} (ID: ${userId})`);
-      }
-      userIds.push(userId);
+        userIds.push(res.insertId);
+        console.log(`Created user: ${user.name}`);
     }
 
-    // 3. Create Posts
-    const posts = [
+    // 3. Create Posts (Realistic Content)
+    console.log('Creating posts...');
+    
+    const postsData = [
       {
-        title: 'Building Scalable React Applications with TypeScript',
-        excerpt: 'Learn the best practices for structuring large-scale React applications using TypeScript, including proper type definitions, component patterns, and state management strategies.',
-        content: 'Full content of the article goes here...',
-        tags: JSON.stringify(['Engineering', 'React', 'TypeScript']),
-        author_id: userIds[0]
+        title: "The Future of React: Server Components Explained",
+        excerpt: "Understanding how React Server Components are changing the way we build modern web applications and improve performance.",
+        tags: ["React", "Frontend", "Performance"],
+        authorIdx: 0, // Sarah
+        content: `React Server Components (RSC) represent a major shift in how we think about building React applications...`
       },
       {
-        title: 'The Art of Writing Clean Code',
-        excerpt: 'Discover the principles behind writing maintainable, readable code that your future self and teammates will thank you for.',
-        content: 'Full content of the article goes here...',
-        tags: JSON.stringify(['Engineering', 'Best Practices']),
-        author_id: userIds[1]
+        title: "Microservices vs Monolith: A Practical Guide",
+        excerpt: "When should you actually break up your monolith? A pragmatic look at architecture decisions for growing teams.",
+        tags: ["Architecture", "Backend", "DevOps"],
+        authorIdx: 1, // Alex
+        content: "The debate between microservices and monolithic architectures continues to be a hot topic..."
       },
       {
-        title: 'Lessons Learned from My First Year as a Developer',
-        excerpt: 'A personal reflection on the challenges, victories, and unexpected lessons from transitioning into a software development career.',
-        content: 'Full content of the article goes here...',
-        tags: JSON.stringify(['Life', 'Career']),
-        author_id: userIds[0]
+        title: "Designing for Accessibility in 2026",
+        excerpt: "Why accessibility isn't just a compliance checklist but a core part of great user experience design.",
+        tags: ["Design", "Accessibility", "UX"],
+        authorIdx: 2, // Elena
+        content: "Web accessibility (a11y) is often treated as an afterthought, but it should be fundamental..."
+      },
+      {
+        title: "Why I Switched from VS Code to Zed",
+        excerpt: "A deep dive into the new generation of high-performance code editors and why speed matters for developer productivity.",
+        tags: ["Productivity", "Tools", "Opinion"],
+        authorIdx: 1, // Alex
+        content: "I have been a loyal VS Code user for years, but recently I decided to try Zed..."
+      },
+      {
+        title: "Mastering CSS Grid Layouts",
+        excerpt: "Stop struggling with layout. Learn the power of CSS Grid and how to build complex responsive designs with ease.",
+        tags: ["CSS", "Design", "Tutorial"],
+        authorIdx: 2, // Elena
+        content: "CSS Grid has revolutionized web layout, allowing for two-dimensional positioning..."
+      },
+      {
+        title: "Node.js Performance Optimization Tips",
+        excerpt: "Practical techniques to speed up your Node.js backend, from loop optimization to proper caching strategies.",
+        tags: ["Node.js", "Backend", "Performance"],
+        authorIdx: 1, // Alex
+        content: "Performance is critical for backend services. In this article, we explore several ways to optimize..."
+      },
+      {
+        title: "The State of JavaScript in 2026",
+        excerpt: "A look at the latest ECMAScript features and the evolving ecosystem of tools and frameworks.",
+        tags: ["JavaScript", "Web Development"],
+        authorIdx: 0, // Sarah
+        content: "JavaScript continues to evolve at a rapid pace..."
+      },
+      {
+        title: "Building Design Systems that Scale",
+        excerpt: "How to create a consistent design language across multiple products and teams without losing your mind.",
+        tags: ["Design System", "UI", "Process"],
+        authorIdx: 2, // Elena
+        content: "A design system is more than just a component library..."
+      },
+      {
+        title: "Introduction to Rust for Web Developers",
+        excerpt: "Why Rust is becoming a popular choice for web tooling and how you can get started with it today.",
+        tags: ["Rust", "WebAssembly", "Learning"],
+        authorIdx: 1, // Alex
+        content: "Rust has been voted the most loved programming language for several years in a row..."
+      },
+      {
+        title: "Handling State in Complex React Apps",
+        excerpt: "Comparing Redux, Zustand, Recoil, and Context API. Which one should you choose for your next project?",
+        tags: ["React", "State Management"],
+        authorIdx: 0, // Sarah
+        content: "State management remains one of the most challenging aspects of frontend development..."
+      },
+      {
+        title: "Deploying with Docker and Kubernetes",
+        excerpt: "A beginner-friendly guide to containerization and orchestration for modern web deployments.",
+        tags: ["DevOps", "Docker", "Kubernetes"],
+        authorIdx: 1, // Alex
+        content: "Containers have changed how we deploy software..."
+      },
+      {
+        title: "The Psychology of Color in UI Design",
+        excerpt: "How color choices affect user perception, emotion, and conversion rates in digital products.",
+        tags: ["Design", "Psychology", "UI"],
+        authorIdx: 2, // Elena
+        content: "Color is one of the most powerful tools in a designer's arsenal..."
+      },
+      {
+        title: "GraphQL vs REST: Making the Right Choice",
+        excerpt: "Analyzing the pros and cons of GraphQL and REST APIs for different types of applications.",
+        tags: ["API", "Backend", "GraphQL"],
+        authorIdx: 0, // Sarah
+        content: "The choice between GraphQL and REST often depends on specific project requirements..."
+      },
+      {
+        title: "10 Tips for Better Code Reviews",
+        excerpt: "How to give and receive constructive feedback to improve code quality and team culture.",
+        tags: ["Culture", "Productivity", "Engineering"],
+        authorIdx: 0, // Sarah
+        content: "Code reviews are a vital part of the software engineering process..."
       }
     ];
 
-    for (const post of posts) {
-      // Check if title exists to avoid duplicates during multiple runs
-      const [exists] = await pool.query('SELECT id FROM posts WHERE title = ?', [post.title]);
-      
-      if (exists.length === 0) {
-        await pool.query(
-          'INSERT INTO posts (title, excerpt, content, tags, author_id) VALUES (?, ?, ?, ?, ?)',
-          [post.title, post.excerpt, post.content, post.tags, post.author_id]
+    const createdPostIds = [];
+
+    for (const post of postsData) {
+        const [res] = await pool.query(
+          'INSERT INTO posts (title, excerpt, content, tags, author_id, created_at) VALUES (?, ?, ?, ?, ?, DATE_SUB(NOW(), INTERVAL ? DAY))',
+          [
+            post.title, 
+            post.excerpt, 
+            post.content, 
+            JSON.stringify(post.tags), 
+            userIds[post.authorIdx],
+            Math.floor(Math.random() * 30) // Random date within last 30 days
+          ]
         );
+        createdPostIds.push(res.insertId);
         console.log(`Created post: ${post.title}`);
-      } else {
-        console.log(`Post "${post.title}" already exists`);
-      }
     }
 
-    // 4. Generate more dummy posts for pagination
-    const categories = ['Engineering', 'Design', 'Product', 'Life', 'Tutorial'];
-    const extraPostsCount = 20;
-
-    for (let i = 1; i <= extraPostsCount; i++) {
-        const title = `Dummy Post #${i} for Pagination Request`;
-        const [exists] = await pool.query('SELECT id FROM posts WHERE title = ?', [title]);
-
-        if (exists.length === 0) {
-            await pool.query(
-                'INSERT INTO posts (title, excerpt, content, tags, author_id) VALUES (?, ?, ?, ?, ?)',
-                [
-                    title,
-                    `This is a shorter excerpt for dummy post number ${i}. It is used to test the pagination functionality of the home page.`,
-                    `Full content for dummy post ${i}...`,
-                    JSON.stringify([categories[i % categories.length], 'Testing']),
-                    userIds[i % userIds.length] // Alternate authors
-                ]
-            );
-            console.log(`Created extra post: ${title}`);
-        }
-    }
-    // 5. Create Comments
-    console.log('--- Seeding Comments ---');
-    // Clear existing comments first to ensure clean state
-    await pool.query('DELETE FROM comments');
+    // 4. Create Comments
+    console.log('Creating comments...');
     
-    // Get the first post ID
-    const [firstPost] = await pool.query('SELECT id FROM posts ORDER BY id ASC LIMIT 1');
-
-    if (firstPost.length > 0) {
-        const postId = firstPost[0].id;
+    // Add some interaction to the first few posts
+    if (createdPostIds.length > 0) {
+        // Comment on first post
+        await pool.query(
+            'INSERT INTO comments (content, post_id, user_id, created_at) VALUES (?, ?, ?, DATE_SUB(NOW(), INTERVAL 2 HOUR))',
+            ['This is exactly what I needed to read today. Thanks for sharing!', createdPostIds[0], userIds[1]]
+        );
         
-        // Additional users for comments (matching the design somewhat)
-        const commentUsers = [
-            { name: 'Elena Rodriguez', email: 'elena@example.com', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-            { name: 'David Kim', email: 'david@example.com', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }
-        ];
-
-        const commentUserIds = [];
-        for (const user of commentUsers) {
-             const [exists] = await pool.query('SELECT id FROM users WHERE email = ?', [user.email]);
-             if (exists.length > 0) {
-                 commentUserIds.push(exists[0].id);
-             } else {
-                 const [res] = await pool.query('INSERT INTO users (name, email, password, profile_picture) VALUES (?, ?, ?, ?)', [user.name, user.email, hashedPassword, user.avatar]);
-                 commentUserIds.push(res.insertId);
-                 console.log(`Created comment user: ${user.name}`);
-             }
-        }
+        // Comment on second post
+        const [c] = await pool.query(
+            'INSERT INTO comments (content, post_id, user_id, created_at) VALUES (?, ?, ?, DATE_SUB(NOW(), INTERVAL 5 HOUR))',
+            ['Great insights on the architecture trade-offs.', createdPostIds[1], userIds[2]]
+        );
         
-        // Combine all user IDs for variety
-        // userIds[0] = Sarah (Author), userIds[1] = Marcus
-
-        // 1. Top level comment by Marcus (userIds[1])
-        const [c1] = await pool.query('INSERT INTO comments (content, post_id, user_id, created_at) VALUES (?, ?, ?, DATE_SUB(NOW(), INTERVAL 2 HOUR))', 
-            ['Great article! The TypeScript patterns you mentioned are exactly what we implemented in our team. Really helped with onboarding new developers.', postId, userIds[1]]);
-        console.log('Created top-level comment 1');
-
-        // 2. Reply to c1 by Elena
-        await pool.query('INSERT INTO comments (content, post_id, user_id, parent_id, created_at) VALUES (?, ?, ?, ?, DATE_SUB(NOW(), INTERVAL 1 HOUR))',
-            ['I\'ve been struggling with state management in large apps. The React Query suggestion is gold!', postId, commentUserIds[0], c1.insertId]);
-        console.log('Created reply to comment 1');
-        
-        // 3. Threaded reply by Sarah (Author) to Elena
-        await pool.query('INSERT INTO comments (content, post_id, user_id, parent_id, created_at) VALUES (?, ?, ?, ?, NOW())',
-            ['Thanks! React Query has been a game-changer for us. Let me know if you want a deep-dive article on that topic.', postId, userIds[0], c1.insertId]); 
-        console.log('Created reply from author');
-
-        // 4. Another independent comment
-        await pool.query('INSERT INTO comments (content, post_id, user_id) VALUES (?, ?, ?)',
-            ['This is fantastic content. Looking forward to the next one!', postId, commentUserIds[1]]);
-        
-        console.log(`Seeded comments for Post ID ${postId}`);
+        // Reply
+        await pool.query(
+            'INSERT INTO comments (content, post_id, user_id, parent_id, created_at) VALUES (?, ?, ?, ?, DATE_SUB(NOW(), INTERVAL 4 HOUR))',
+            ['Glad you found it helpful!', createdPostIds[1], userIds[1], c.insertId]
+        );
     }
-    process.exit(0);
 
+    console.log('✅ Database seeded successfully!');
+    if (require.main === module) process.exit(0);
+    return { success: true, message: 'Database seeded successfully' };
 
   } catch (err) {
     console.error('❌ Seeding failed:', err);
-    process.exit(1);
+    if (require.main === module) process.exit(1);
+    throw err;
   }
 };
 
-seedData();
+if (require.main === module) {
+  seedData();
+}
+
+module.exports = seedData;
