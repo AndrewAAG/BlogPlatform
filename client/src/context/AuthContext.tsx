@@ -24,16 +24,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        if (token) {
-            axios.defaults.headers.common['x-auth-token'] = token;
-            localStorage.setItem('token', token);
-            // Here you would typically fetch the user profile
-            // For now we assume valid token means authenticated
-        } else {
-            delete axios.defaults.headers.common['x-auth-token'];
-            localStorage.removeItem('token');
-        }
-        setLoading(false);
+        const loadUser = async () => {
+            if (token) {
+                axios.defaults.headers.common['x-auth-token'] = token;
+                localStorage.setItem('token', token);
+                try {
+                    const res = await axios.get('http://localhost:5001/auth/me');
+                    setUser(res.data);
+                } catch (err) {
+                    console.error('Error loading user:', err);
+                    delete axios.defaults.headers.common['x-auth-token'];
+                    localStorage.removeItem('token');
+                    setToken(null);
+                    setUser(null);
+                }
+            } else {
+                delete axios.defaults.headers.common['x-auth-token'];
+                localStorage.removeItem('token');
+                setUser(null);
+            }
+            setLoading(false);
+        };
+
+        loadUser();
     }, [token]);
 
     const login = (newToken: string) => {
