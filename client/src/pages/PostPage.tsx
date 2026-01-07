@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft, Calendar, Edit, Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -21,9 +21,13 @@ interface Post {
 const PostPage = () => {
     const { id } = useParams();
     const { user } = useAuth();
+    const location = useLocation();
     const [post, setPost] = useState<Post | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const from = location.state?.from?.pathname || '/';
+    const backText = from.includes('profile') ? 'Back to profile' : 'Back to feed';
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -91,9 +95,9 @@ const PostPage = () => {
             <Navbar />
 
             <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-                <Link to="/" className="inline-flex items-center text-slate-500 hover:text-slate-900 transition-colors mb-8">
+                <Link to={from} className="inline-flex items-center text-slate-500 hover:text-slate-900 transition-colors mb-8">
                     <ArrowLeft size={18} className="mr-2" />
-                    Back to feed
+                    {backText}
                 </Link>
 
                 <article>
