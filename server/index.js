@@ -8,6 +8,12 @@ app.use(cors({
   origin: process.env.CLIENT_URL || '*', 
   credentials: true
 }));
+app.disable('etag'); // Disable strong caching
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  next();
+});
+
 app.use(express.json()); // To read JSON data from request body
 
 app.get('/', (req, res) => {
@@ -24,8 +30,12 @@ app.use('/users', require('./routes/userRoutes'));
 app.use('/uploads', express.static('uploads'));
 
 
-// Run Server
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Run Server (only if run directly)
+if (require.main === module) {
+  const PORT = process.env.PORT || 5001;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
