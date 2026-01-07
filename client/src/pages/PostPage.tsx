@@ -137,7 +137,7 @@ const PostPage = () => {
                     </h1>
 
                     {/* Author & Meta */}
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-8 mb-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-8 mb-8">
                         <Link to={`/profile/${post.author_id}`} className="flex items-center gap-3 group">
                             <img
                                 src={post.author_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author_name)}&background=random`}
@@ -157,7 +157,7 @@ const PostPage = () => {
 
                         {/* Actions (Only visible if isAuthor) */}
                         {isAuthor && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 self-start sm:self-auto">
                                 <Link
                                     to={`/edit/${post.id}`}
                                     className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary-600 rounded-lg transition-colors border border-slate-200"
