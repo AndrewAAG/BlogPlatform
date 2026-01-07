@@ -29,7 +29,6 @@ app.use(cors({
   credentials: true
 }));
 
-app.options('*', cors()); // Enable pre-flight for all routes
 app.use(express.json()); // To read JSON data from request body
 
 app.get('/', (req, res) => {
