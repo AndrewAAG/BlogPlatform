@@ -4,26 +4,11 @@ const app = express();
 require('dotenv').config();
 
 app.use((req, res, next) => {
-  const incomingOrigin = req.headers.origin;
+  res.header('X-Debug-Code-Active', 'YES_IT_IS_RUNNING');
+
+  const TRACER_VALUE = 'TEST-DEBUG-MODE';
   
-  const whitelist = [
-    'http://localhost:5173',
-    'https://blog-platform-andrew.netlify.app'
-  ];
-
-  if (incomingOrigin) {
-    const isAllowed = whitelist.some(domain => 
-      domain.replace(/\/$/, '') === incomingOrigin.replace(/\/$/, '')
-    );
-
-    if (isAllowed) {
-      res.header('Access-Control-Allow-Origin', incomingOrigin);
-      console.log(`[CORS] Allowed: ${incomingOrigin}`); 
-    } else {
-      console.log(`[CORS] Blocked: ${incomingOrigin}`);
-    }
-  }
-
+  res.header('Access-Control-Allow-Origin', TRACER_VALUE);
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -36,6 +21,14 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json()); // To read JSON data from request body
+
+app.get('/debug-env', (req, res) => {
+  res.json({
+    message: "Server is running",
+    env_client_url: process.env.CLIENT_URL || "NOT_SET", 
+    headers_received: req.headers
+  });
+});
 
 app.get('/', (req, res) => {
   res.send('API Running');
