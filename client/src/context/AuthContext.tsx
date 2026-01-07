@@ -3,6 +3,7 @@ import axios from 'axios';
 
 interface User {
     id: number;
+    profile_picture?: string;
     // Add other user properties as needed
 }
 

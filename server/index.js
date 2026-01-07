@@ -13,6 +13,7 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/auth', require('./routes/authRoutes'));
+app.use('/posts', require('./routes/postRoutes'));
 
 // Run Server
 const PORT = process.env.PORT || 5001;
