@@ -4,17 +4,24 @@ const app = express();
 require('dotenv').config();
 
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
+  const incomingOrigin = req.headers.origin;
   
-  const PROD_ORIGIN = 'https://blog-platform-andrew.netlify.app';
-  
-  const allowedOrigins = [
+  const whitelist = [
     'http://localhost:5173',
-    PROD_ORIGIN
+    'https://blog-platform-andrew.netlify.app'
   ];
 
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
+  if (incomingOrigin) {
+    const isAllowed = whitelist.some(domain => 
+      domain.replace(/\/$/, '') === incomingOrigin.replace(/\/$/, '')
+    );
+
+    if (isAllowed) {
+      res.header('Access-Control-Allow-Origin', incomingOrigin);
+      console.log(`[CORS] Allowed: ${incomingOrigin}`); 
+    } else {
+      console.log(`[CORS] Blocked: ${incomingOrigin}`);
+    }
   }
 
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
