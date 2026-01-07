@@ -7,9 +7,12 @@ const seedData = async () => {
 
     // 1. Clean up existing data (Child tables first)
     console.log('Cleaning up old data...');
+    // Disable FK checks to allow truncation of self-referencing tables
+    await pool.query('SET FOREIGN_KEY_CHECKS = 0');
     await pool.query('DELETE FROM comments');
     await pool.query('DELETE FROM posts');
     await pool.query('DELETE FROM users');
+    await pool.query('SET FOREIGN_KEY_CHECKS = 1');
     
     // Reset Auto Increment (Optional, specific to MySQL)
     // await pool.query('ALTER TABLE users AUTO_INCREMENT = 1');
