@@ -116,15 +116,16 @@ const PostPage = () => {
                     </h1>
 
                     {/* Author & Meta */}
+                    {/* Author & Meta */}
                     <div className="flex items-center justify-between border-b border-slate-100 pb-8 mb-8">
-                        <div className="flex items-center gap-3">
+                        <Link to={`/profile/${post.author_id}`} className="flex items-center gap-3 group">
                             <img
                                 src={post.author_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author_name)}&background=random`}
                                 alt={post.author_name}
-                                className="w-12 h-12 rounded-full ring-2 ring-white"
+                                className="w-12 h-12 rounded-full ring-2 ring-white object-cover"
                             />
                             <div>
-                                <h3 className="text-sm font-bold text-slate-900">{post.author_name}</h3>
+                                <h3 className="text-sm font-bold text-slate-900 group-hover:text-primary-600 transition-colors">{post.author_name}</h3>
                                 <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
                                     <span className="flex items-center gap-1">
                                         <Calendar size={14} />
@@ -132,7 +133,7 @@ const PostPage = () => {
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
 
                         {/* Actions (Only visible if isAuthor) */}
                         {isAuthor && (

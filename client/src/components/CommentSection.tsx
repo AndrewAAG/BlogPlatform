@@ -145,15 +145,19 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
             return (
                 <div key={comment.id} className={`mt-6 ${isReply ? 'ml-8 pl-4 border-l-2 border-slate-100' : ''}`}>
                     <div className="flex gap-3">
-                        <img
-                            src={comment.author_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author_name)}&background=random`}
-                            alt={comment.author_name}
-                            className="w-10 h-10 rounded-full bg-slate-100 object-cover"
-                        />
+                        <Link to={`/profile/${comment.user_id}`} className="shrink-0">
+                            <img
+                                src={comment.author_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author_name)}&background=random`}
+                                alt={comment.author_name}
+                                className="w-10 h-10 rounded-full bg-slate-100 object-cover"
+                            />
+                        </Link>
                         <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
                                 <div className="flex items-center gap-2">
-                                    <span className="font-semibold text-slate-900 text-sm">{comment.author_name}</span>
+                                    <Link to={`/profile/${comment.user_id}`} className="font-semibold text-slate-900 text-sm hover:text-primary-600 transition-colors">
+                                        {comment.author_name}
+                                    </Link>
                                     <span className="text-xs text-slate-500">{formatDate(comment.created_at)}</span>
                                 </div>
                                 {isOwner && editingId !== comment.id && (
