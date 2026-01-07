@@ -5,7 +5,20 @@ require('dotenv').config();
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || '*', 
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin matches CLIENT_URL or localhost (for dev)
+    const allowedOrigins = [process.env.CLIENT_URL, 'http://localhost:5173'];
+    if (allowedOrigins.includes(origin) || !process.env.CLIENT_URL) {
+      // Trust the origin if it matches or if CLIENT_URL is not strictly set (dev mode)
+      // For production, CLIENT_URL should be set.
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json()); // To read JSON data from request body
