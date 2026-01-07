@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import PostCard from '../components/PostCard';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
@@ -21,12 +22,20 @@ const HomePage = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const [searchParams] = useSearchParams();
+
+    const searchQuery = searchParams.get('search') || '';
+
+    // Reset page when search changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
 
     useEffect(() => {
         const fetchPosts = async () => {
             setIsLoading(true);
             try {
-                const res = await axios.get(`http://localhost:5001/posts?page=${currentPage}&limit=5`);
+                const res = await axios.get(`http://localhost:5001/posts?page=${currentPage}&limit=5&search=${encodeURIComponent(searchQuery)}`);
                 setPosts(res.data.posts);
                 setTotalPages(res.data.totalPages);
                 setError('');
@@ -39,7 +48,7 @@ const HomePage = () => {
         };
 
         fetchPosts();
-    }, [currentPage]);
+    }, [currentPage, searchQuery]);
 
     return (
         <div className="min-h-screen bg-slate-50">

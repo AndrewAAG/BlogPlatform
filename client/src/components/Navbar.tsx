@@ -1,17 +1,22 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, PenSquare, LogOut, User, Code2, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Navbar = () => {
     const { isAuthenticated, logout, user } = useAuth();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [showDropdown, setShowDropdown] = useState(false);
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
 
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-        setShowDropdown(false);
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            navigate(`/?search=${encodeURIComponent(searchTerm)}`);
+        } else {
+            navigate('/');
+        }
     };
 
     return (
@@ -28,16 +33,18 @@ const Navbar = () => {
                     </div>
 
                     <div className="flex-1 flex items-center justify-center px-8">
-                        <div className="w-full max-w-md relative">
+                        <form onSubmit={handleSearch} className="w-full max-w-md relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Search className="h-4 w-4 text-slate-400" />
                             </div>
                             <input
                                 type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-150 ease-in-out"
                                 placeholder="Search articles..."
                             />
-                        </div>
+                        </form>
                     </div>
 
                     <div className="flex items-center gap-4">
