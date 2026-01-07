@@ -10,7 +10,6 @@ interface PostCardProps {
             name: string;
             avatar: string;
         };
-        category: string;
         tags?: string[];
         date: string;
     };
@@ -42,10 +41,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 </p>
             </Link>
 
-            <div className="flex items-center gap-2 mb-4">
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">
-                    {post.category}
-                </span>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
                 {post.tags?.map((tag, index) => (
                     <span key={index} className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">
                         {tag}
